@@ -2,6 +2,7 @@ import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 ///provider
 final stateModelProvider = StateNotifierProvider<StateModelState, StateModel>(
@@ -44,9 +45,14 @@ class StateModelState extends StateNotifier<StateModel> {
         ),
       );
 
-      ///
+      ///stateセット
       state = StateModel(scanResult: result);
       // setState(() => scanResult = result);
+
+      ///読み取ったリンク先へ飛ぶ
+      String url = state.scanResult!.rawContent.toString();
+      await canLaunch(url) ? await launch(url) : throw 'Could not launch $url';
+
     } on PlatformException catch (e) {
       ///
       state = StateModel(
